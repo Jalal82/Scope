@@ -1,7 +1,6 @@
 #ifndef UI_HPP
 #define UI_HPP
 
-
 #include "inc.h"
 
 #define UPPER_VOLTAGE (atten * 3.3)
@@ -10,12 +9,20 @@
 #define RISING 1
 #define FALLING 0
 
-
+#define Y_CELLS 18
+#define X_CELLS 31
 
 class ui
 {
 private:
+    // SDL2 resoureces for rendring
+    SDL_Surface *surface;
+    SDL_Texture *texture;
+    SDL_Surface *surface_T;
+    SDL_Texture *texture_T;
+
     // Grid Aria Const offset aria and shape vars
+    uint8_t cell_size = 30;
     uint8_t grid_x_o = 35;
     uint8_t grid_y_o = 40;
     uint16_t grid_w = 1000;
@@ -25,11 +32,21 @@ private:
         grid_y_o,
         grid_w - grid_x_o * 2,
         grid_h - grid_y_o * 2};
+
+    SDL_Rect grid_border_box = {
+        grid_x_o,
+        grid_y_o,
+        grid_w - grid_x_o * 2,
+        grid_h - grid_y_o * 2};
+
     SDL_Rect h_box1 = {
         grid_w - grid_x_o,
         grid_y_o,
         100,
         grid_h - grid_x_o * 2};
+
+    int zero_line_y = 9 * cell_size + grid_border_box.y;
+    int zero_line_x2 = grid_border_box.x + grid_border_box.w;
 
     // Waveform preview offset and shape vars
     uint16_t waveform_privew_x = 300;
@@ -57,37 +74,58 @@ private:
         waveform_privew_w - 4,
         25};
 
+    // Trigger Aria Rnedring variables
+    SDL_Rect trigger_box = {
+        waveform_privew_x + waveform_privew_w + 150,
+        6,
+        150,
+        28};
+
     // Scope Mode Rendring Aria, vars and Texture vars
     uint8_t Mode = 1; // 0  for Stop and 1 for Runing
     SDL_Rect ModeRect = {
-        150,
-        8,
-        100,
-        25};
+        140,
+        6,
+        110,
+        28};
 
     int atten = 2;  // Attenuation
-    float vdiv = 2; // Volts per division
+    float vdiv = 1; // Volts per division
 
-    uint8_t trigged;       // whether or not we're triggered
-    int trigPoint;         // triggering point
-    float trigVoltage = 0; // Trigger level
-    uint8_t trig = RISING; // Trigger slope
+    uint8_t trigged;           // whether or not we're triggered
+    int trigPoint;             // triggering point
+    float trigVoltage = 0.0; // Trigger level
+    uint8_t trig = RISING;     // Trigger slope
 
-    float tdiv = 20;   // uS per division
-    float sampPer;     // Sample period in uS (how long it takes to measure one sample)
+    float tdiv = 1; // uS per division
+    float sampPer;   // Sample period in uS (how long it takes to measure one sample)
 
     float maxVoltage, minVoltage; // Voltage measurements
-    float measuredFreq, sigPer;   // Time measurements
+    float sigPer;                 // Time measurements
+
+    float offsetVoltage = 1.6540283; // Reference voltage of the the analog frontend
+
+    uint16_t max_adc_value = 255; // 255 for 8 bits resolution
+
+    uint8_t topClip, bottomClip; // Whether or not we're clipping through the graticule
 
     uint8_t _t_id;
 
+    // Precalculated data used for rendring waveform
+    uint16_t draw_aria_max_x = grid_w - grid_x_o * 2;
+
 public:
+    float measuredFreq;
+
     ui();
     ~ui();
 
     void key_handler(SDL_Event &event);
+    void waveform_preview();
+    void grid();
+    void getTrigger();
+    void draw_wave(SDL_Color wave_color);
+    float frontendVoltage(uint16_t samp);
 };
-
-
 
 #endif

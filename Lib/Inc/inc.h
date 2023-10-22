@@ -15,7 +15,7 @@
 #define HW_OFFSET 1.65
 #define ADC_VCC 3.3
 
-#define RECIEVE_LENGTH 4096
+#define RECIEVE_LENGTH 4096*5
 #define SAMPLES_BUFFER_DEPTH 16400 * 2 // 16.4 kbps
 #define LOG_BUFFER_DEPTH 16400 * 10    // 10 sec of loging with 16.4 kbps
 
@@ -36,10 +36,7 @@ extern const SDL_Color ORANGE_COLOR;
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern TTF_Font *font18;
-extern SDL_Surface *surface;
-extern SDL_Texture *texture;
-extern SDL_Surface *surface_T;
-extern SDL_Texture *texture_T;
+
 
 extern int WINDOW_WIDTH;
 extern int WINDOW_HEIGHT;
@@ -53,3 +50,6 @@ extern volatile uint16_t samplespersecond;
 extern bool LOG;
 extern uint8_t LOG_BUFFER[LOG_BUFFER_DEPTH];
 extern uint16_t LOG_INDEX;
+
+// Used for testing
+extern uint8_t sine_wave[256];

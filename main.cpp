@@ -7,11 +7,11 @@ int WinMain()
 int main()
 #endif
 {
-    usb device1("COM10", 1180000);
-    usb device2("COM11", 1180000);
+    // usb device1("COM10", 1180000);
+    usb device2("COM12", 1180000);
 
     graphics scope(0);
-    scope.sendThread(device1);
+    // scope.sendThread(device1);
     scope.scope_loop(device2);
 
     return 0;

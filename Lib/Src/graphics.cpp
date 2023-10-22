@@ -18,7 +18,7 @@ graphics::graphics(uint8_t id)
     SDL_SetWindowMaximumSize(window, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Clear the window with back color
-    SDL_SetRenderDrawColor(renderer, BACK_COLOR.r, BACK_COLOR.g, BACK_COLOR.b, BACK_COLOR.a);
+    SDL_SetRenderDrawColor(renderer, BLACK_COLOR.r, BLACK_COLOR.g, BLACK_COLOR.b, BLACK_COLOR.a);
     SDL_RenderClear(renderer);
 }
 
@@ -28,7 +28,7 @@ graphics::~graphics()
     {
         send_thread.detach();
     }
-    std::cout << "[info]: Closing threads and clennig up memory resources!" << std::endl;
+    std::cout << "[info]: Closing threads and cleaning up memory resources!" << std::endl;
 }
 
 void graphics::_sendThread(usb &device)
@@ -87,6 +87,7 @@ void graphics::_receiveThread(usb &device)
 #if RECIEVE_DEBUG
             std::cout << "Recivead sampels/sec: ";
             std::cout << samplespersecond << std::endl;
+            std::cout << scope_ui.measuredFreq << std::endl;
 #endif
             samplespersecond = 0;
         }
@@ -103,6 +104,10 @@ void graphics::scope_loop(usb &device)
 
     std::thread receiveThread([this, &device]()
                               { _receiveThread(device); });
+
+    // Render waveform preview aria before the loop
+    scope_ui.waveform_preview();
+
     while (isRunning)
     {
         Uint32 frameStart = SDL_GetTicks(); // Get the current time at the start of the frame
@@ -121,8 +126,17 @@ void graphics::scope_loop(usb &device)
         }
 
         // Clear the window with back color
-        SDL_SetRenderDrawColor(renderer, BACK_COLOR.r, BACK_COLOR.g, BACK_COLOR.b, BACK_COLOR.a);
-        SDL_RenderClear(renderer);
+        // SDL_SetRenderDrawColor(renderer, BACK_COLOR.r, BACK_COLOR.g, BACK_COLOR.b, BACK_COLOR.a);
+        // SDL_RenderClear(renderer);
+
+        // Clear the drawing aria and render the scope grid
+        scope_ui.grid();
+
+        // Find the trigger point
+        scope_ui.getTrigger();
+
+        // Draw the wave
+        scope_ui.draw_wave(ORANGE_COLOR);
 
         // Update the window
         SDL_RenderPresent(renderer);
