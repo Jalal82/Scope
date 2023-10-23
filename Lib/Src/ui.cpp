@@ -86,7 +86,7 @@ void ui::key_handler(SDL_Event &event)
             focus_box.x++;
             focus_box_T.x++;
         }
-        move++;
+        move += 10;
 
         break;
 
@@ -96,8 +96,8 @@ void ui::key_handler(SDL_Event &event)
             focus_box.x--;
             focus_box_T.x--;
         }
-        if (move > 1)
-            move--;
+        if (move > 10)
+            move -= 10;
         break;
 
     case SDLK_z:
@@ -167,6 +167,15 @@ void ui::key_handler(SDL_Event &event)
             Mode = 0; // Runing
         else
             Mode = 1; // Stop
+        break;
+
+    case SDLK_8:
+        if (trigVoltage < (Y_CELLS / 2 - 1) * vdiv)
+            trigVoltage += 0.1;
+        break;
+    case SDLK_2:
+        if (trigVoltage > 0)
+            trigVoltage -= 0.1;
         break;
         // Add more cases for other keys
     }
@@ -278,7 +287,7 @@ void ui::waveform_preview()
     SDL_SetRenderDrawColor(renderer, 100, 60, 0, 255);
     // SDL_RenderFillRect(renderer, &trigger_box);
     roundedBoxRGBA(renderer, VoltageRect.x, VoltageRect.y, VoltageRect.x + VoltageRect.w, VoltageRect.y + VoltageRect.h, 5, 100, 60, 0, 255);
-    snprintf(trig_txt, 50, " CH1  %.2fV   ", vdiv);
+    snprintf(trig_txt, 50, " CH1  %.2fV/d   ", vdiv);
 
     surface = TTF_RenderText_Blended(font18, trig_txt, YELLOW_COLOR);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -304,6 +313,15 @@ void ui::waveform_preview()
     // Cleanup
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
+
+    // Mesurement  aria
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    // SDL_RenderFillRect(renderer, &trigger_box);
+    roundedBoxRGBA(renderer, MesureRect.x, MesureRect.y, MesureRect.x + MesureRect.w, MesureRect.y + MesureRect.h, 3, 255, 255, 255, 255);
+    roundedBoxRGBA(renderer, MesureRect.x + 1, MesureRect.y + 1, MesureRect.x + MesureRect.w - 2, MesureRect.y + MesureRect.h - 1, 3, 0, 0, 0, 255);
+    // // Cleanup
+    // SDL_DestroyTexture(texture);
+    // SDL_FreeSurface(surface);
 }
 
 // Clear and Draw the scope grid

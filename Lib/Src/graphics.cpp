@@ -147,11 +147,13 @@ void graphics::scope_loop(usb &device)
         Uint32 frameEnd = SDL_GetTicks();             // Get the current time at the end of the frame
         Uint32 frameDuration = frameEnd - frameStart; // Calculate the duration of the frame
 
-        // Delay if the frame finished faster than the desired frame time (1/60 seconds)
+        // Delay if the frame finished faster than the desired frame time (1/60 seconds) Response time of 17-18 ms
         if (frameDuration < 16)
         {
             SDL_Delay(16 - frameDuration);
         }
+
+        // std::cout << frameDuration << std::endl;
     }
     if (receiveThread.joinable())
     {

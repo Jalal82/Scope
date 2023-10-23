@@ -12,6 +12,8 @@
 #define Y_CELLS 18
 #define X_CELLS 31
 
+typedef SDL_Surface *(*IMG_LoadFunc)(const char *);
+
 class ui
 {
 private:
@@ -74,7 +76,7 @@ private:
         waveform_privew_w - 4,
         25};
     uint16_t T_Offect = 0;
-    uint16_t move = 0; //used to move the wavefrom across x-axis
+    uint16_t move = 0; // used to move the wavefrom across x-axis
 
     // Trigger Aria Rnedring variables
     SDL_Rect trigger_box = {
@@ -101,8 +103,15 @@ private:
     SDL_Rect TimeRect = {
         waveform_privew_x + waveform_privew_w + 150,
         grid_box.y + grid_box.h + 7,
-        150,
+        140,
         28};
+
+    // Mesure Aria
+    SDL_Rect MesureRect = {
+        grid_w - grid_x_o + 5,
+        grid_y_o,
+        230,
+        grid_h - grid_y_o * 2};
 
     int atten = 2;  // Attenuation
     float vdiv = 1; // Volts per division

@@ -6,7 +6,7 @@ LIB = Lib/Src/usb.cpp Lib/Src/graphics.cpp  Lib/Src/ui.cpp
 INC = Lib/Inc
 OUT = Scope
 
-LINKER = -lws2_32 -lSDL2 -lSDL2_gfx -lSDL2_ttf -lfftw3
+LINKER = -lws2_32 -lSDL2 -lSDL2_gfx -lSDL2_ttf  -lfftw3
 
 all : $(TARGET)
 $(TARGET) : $(TARGET).cpp
