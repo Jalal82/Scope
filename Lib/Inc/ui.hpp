@@ -73,6 +73,8 @@ private:
         8,
         waveform_privew_w - 4,
         25};
+    uint16_t T_Offect = 0;
+    uint16_t move = 0; //used to move the wavefrom across x-axis
 
     // Trigger Aria Rnedring variables
     SDL_Rect trigger_box = {
@@ -82,22 +84,35 @@ private:
         28};
 
     // Scope Mode Rendring Aria, vars and Texture vars
-    uint8_t Mode = 1; // 0  for Stop and 1 for Runing
     SDL_Rect ModeRect = {
         140,
         6,
         110,
         28};
 
+    // Voltage dev Rendring Aria
+    SDL_Rect VoltageRect = {
+        140,
+        grid_box.y + grid_box.h + 7,
+        110,
+        28};
+
+    // Time dev Rendring Aria
+    SDL_Rect TimeRect = {
+        waveform_privew_x + waveform_privew_w + 150,
+        grid_box.y + grid_box.h + 7,
+        150,
+        28};
+
     int atten = 2;  // Attenuation
     float vdiv = 1; // Volts per division
 
-    uint8_t trigged;           // whether or not we're triggered
-    int trigPoint;             // triggering point
+    uint8_t trigged;         // whether or not we're triggered
+    int trigPoint;           // triggering point
     float trigVoltage = 0.0; // Trigger level
-    uint8_t trig = RISING;     // Trigger slope
+    uint8_t trig = RISING;   // Trigger slope
 
-    float tdiv = 1; // uS per division
+    float tdiv = 20; // uS per division
     float sampPer;   // Sample period in uS (how long it takes to measure one sample)
 
     float maxVoltage, minVoltage; // Voltage measurements
@@ -116,6 +131,7 @@ private:
 
 public:
     float measuredFreq;
+    uint8_t Mode = 1; // 0  for Stop and 1 for Runing
 
     ui();
     ~ui();

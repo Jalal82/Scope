@@ -62,39 +62,42 @@ void graphics::_receiveThread(usb &device)
     auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
     while (isRunning)
     {
-        // get the samples from hw register
-        receivedData = device.read_uint8_buffer(RECIEVE_LENGTH);
-
-        for (const auto &sample : receivedData)
+        if (scope_ui.Mode)
         {
-            SAMPLES_BUFFER[SAMPLE_INDEX] = sample;
-            SAMPLE_INDEX++;
-            if (LOG && LOG_INDEX < LOG_BUFFER_DEPTH)
+            // get the samples from hw register
+            receivedData = device.read_uint8_buffer(RECIEVE_LENGTH);
+
+            for (const auto &sample : receivedData)
             {
-                LOG_BUFFER[LOG_INDEX] = sample;
-                LOG_INDEX++;
+                SAMPLES_BUFFER[SAMPLE_INDEX] = sample;
+                SAMPLE_INDEX++;
+                if (LOG && LOG_INDEX < LOG_BUFFER_DEPTH)
+                {
+                    LOG_BUFFER[LOG_INDEX] = sample;
+                    LOG_INDEX++;
+                }
+                samplespersecond++;
             }
-            samplespersecond++;
-        }
-        finishedConversion = 1;
+            finishedConversion = 1;
 
-        currentTime = std::chrono::steady_clock::now();
-        elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
+            currentTime = std::chrono::steady_clock::now();
+            elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - startTime);
 
-        if (elapsedTime >= std::chrono::seconds(1))
-        {
-            startTime = currentTime;
+            if (elapsedTime >= std::chrono::seconds(1))
+            {
+                startTime = currentTime;
 #if RECIEVE_DEBUG
-            std::cout << "Recivead sampels/sec: ";
-            std::cout << samplespersecond << std::endl;
-            std::cout << scope_ui.measuredFreq << std::endl;
+                std::cout << "Recivead sampels/sec: ";
+                std::cout << samplespersecond << std::endl;
+                std::cout << scope_ui.measuredFreq << std::endl;
 #endif
-            samplespersecond = 0;
-        }
+                samplespersecond = 0;
+            }
 
-        if (!isRunning)
-        {
-            break;
+            if (!isRunning)
+            {
+                break;
+            }
         }
     }
 }

@@ -81,38 +81,23 @@ void ui::key_handler(SDL_Event &event)
     switch (event.key.keysym.sym)
     {
     case SDLK_d:
-
-        if (focus_box.w > 60 && ((focus_box.x > destRect.x + 5) || focus_box.x == privew_box.x + 7))
+        if ((focus_box.x + focus_box.w) < (destRect.x + destRect.w) - 5)
         {
-            focus_box.w--;
-
-            focus_box_T.x -= (focus_box.w - 307) % 2;
+            focus_box.x++;
+            focus_box_T.x++;
         }
-        if (tdiv >= 1000)
-            tdiv += 1000;
-        else if (tdiv >= 100)
-            tdiv += 100;
-        else if (tdiv >= 10)
-            tdiv += 10;
+        move++;
+
         break;
 
     case SDLK_q:
-
-        if (focus_box.w < privew_box.w - 10 && (((focus_box.x + focus_box.w) < (destRect.x + destRect.w) - 5) || focus_box.x == privew_box.x + 7))
+        if (focus_box.x > destRect.x + 5)
         {
-            focus_box.w++;
-            focus_box_T.x += (focus_box.w - 307) % 2;
+            focus_box.x--;
+            focus_box_T.x--;
         }
-
-        if (tdiv > 20)
-        {
-            if (tdiv > 1000)
-                tdiv -= 1000;
-            else if (tdiv > 100)
-                tdiv -= 100;
-            else if (tdiv > 10)
-                tdiv -= 10;
-        }
+        if (move > 1)
+            move--;
         break;
 
     case SDLK_z:
@@ -125,27 +110,49 @@ void ui::key_handler(SDL_Event &event)
         break;
 
     case SDLK_UP:
-
+        if (vdiv > 0.25)
+            vdiv -= 0.25;
         break;
 
     case SDLK_DOWN:
 
+        if (vdiv < 4)
+            vdiv += 0.25;
         break;
 
     case SDLK_RIGHT:
-        if ((focus_box.x + focus_box.w) < (destRect.x + destRect.w) - 5)
+        if (focus_box.w < privew_box.w - 10 && (((focus_box.x + focus_box.w) < (destRect.x + destRect.w) - 5) || focus_box.x == privew_box.x + 7))
         {
-            focus_box.x++;
-            focus_box_T.x++;
+            focus_box.w++;
+            T_Offect++;
+            focus_box_T.x += T_Offect % 2;
         }
+        if (tdiv >= 10000)
+            tdiv += 10000;
+        else if (tdiv >= 1000)
+            tdiv += 1000;
+        else if (tdiv >= 100)
+            tdiv += 100;
+        else if (tdiv >= 10)
+            tdiv += 10;
         break;
 
     case SDLK_LEFT:
-        if (focus_box.x > destRect.x + 5)
+
+        if (focus_box.w > 60 && ((focus_box.x > destRect.x + 5) || focus_box.x == privew_box.x + 7))
         {
-            focus_box.x--;
-            focus_box_T.x--;
+            focus_box.w--;
+            T_Offect--;
+            focus_box_T.x -= T_Offect % 2;
         }
+        if (tdiv > 10000)
+            tdiv -= 10000;
+        else if (tdiv > 1000)
+            tdiv -= 1000;
+        else if (tdiv > 100)
+            tdiv -= 100;
+        else if (tdiv > 10)
+            tdiv -= 10;
         break;
 
     case SDLK_t:
@@ -247,14 +254,14 @@ void ui::waveform_preview()
     char trig_txt[50];
     if (trigVoltage < 1.0)
         if (trig == RISING)
-            snprintf(trig_txt, 50, "   RISING     %dmV   ", int(trigVoltage * 1000));
+            snprintf(trig_txt, 50, "   RISING        %dmV   ", int(trigVoltage * 1000));
         else
             snprintf(trig_txt, 50, "   FALLING     %dmV   ", int(trigVoltage * 1000));
 
     else
     {
         if (trig == RISING)
-            snprintf(trig_txt, 50, "   RISING      %.2fV  ", trigVoltage);
+            snprintf(trig_txt, 50, "   RISING        %.2fV  ", trigVoltage);
         else
             snprintf(trig_txt, 50, "   FALLING     %.2fV  ", trigVoltage);
     }
@@ -262,6 +269,37 @@ void ui::waveform_preview()
     surface = TTF_RenderText_Blended(font18, trig_txt, YELLOW_COLOR);
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_RenderCopy(renderer, texture, nullptr, &trigger_box);
+
+    // Cleanup
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+
+    // Render Voltage aria
+    SDL_SetRenderDrawColor(renderer, 100, 60, 0, 255);
+    // SDL_RenderFillRect(renderer, &trigger_box);
+    roundedBoxRGBA(renderer, VoltageRect.x, VoltageRect.y, VoltageRect.x + VoltageRect.w, VoltageRect.y + VoltageRect.h, 5, 100, 60, 0, 255);
+    snprintf(trig_txt, 50, " CH1  %.2fV   ", vdiv);
+
+    surface = TTF_RenderText_Blended(font18, trig_txt, YELLOW_COLOR);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_RenderCopy(renderer, texture, nullptr, &VoltageRect);
+
+    // Cleanup
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+
+    // Render Time aria
+    SDL_SetRenderDrawColor(renderer, 100, 60, 0, 255);
+    // SDL_RenderFillRect(renderer, &trigger_box);
+    roundedBoxRGBA(renderer, TimeRect.x, TimeRect.y, TimeRect.x + TimeRect.w, TimeRect.y + TimeRect.h, 5, 100, 60, 0, 255);
+    if (tdiv < 1000)
+        snprintf(trig_txt, 50, " Time:  %.2fus/d   ", tdiv);
+    else
+        snprintf(trig_txt, 50, " Time:  %.2fms/d   ", tdiv / 1000);
+
+    surface = TTF_RenderText_Blended(font18, trig_txt, YELLOW_COLOR);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_RenderCopy(renderer, texture, nullptr, &TimeRect);
 
     // Cleanup
     SDL_DestroyTexture(texture);
@@ -280,7 +318,6 @@ void ui::grid()
     SDL_SetRenderDrawColor(renderer, WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b, 255); // white color
     SDL_RenderDrawRect(renderer, &grid_border_box);
 
-    
     // Draw the grid
     SDL_SetRenderDrawColor(renderer, GRID_COLOR.r, GRID_COLOR.g, GRID_COLOR.b, GRID_COLOR.a);
     for (int x = grid_x_o; x <= grid_w - grid_x_o; x += cell_size)
@@ -295,9 +332,7 @@ void ui::grid()
     // Draw zero level
     SDL_SetRenderDrawColor(renderer, WHITE_COLOR.r, WHITE_COLOR.g, WHITE_COLOR.b, 255); // white color
     SDL_RenderDrawLine(renderer, grid_border_box.x, zero_line_y, zero_line_x2, zero_line_y);
-
 }
-
 
 // This function finds the trigger point and cumpute signal main frequency using basic approach nothing fancy like FFT, TBI
 void ui::getTrigger()
@@ -341,8 +376,8 @@ void ui::draw_wave(SDL_Color wave_color)
     for (int i = 0; i <= RECIEVE_LENGTH / 2; i++)
     {
         // If we're looping through the buffer, let's compute the minimum and maximum voltage values while we're at it
-        float voltage1 = atten * frontendVoltage(SAMPLES_BUFFER[i + trigPoint]);
-        float voltage2 = atten * frontendVoltage(SAMPLES_BUFFER[i + trigPoint + 1]);
+        float voltage1 = atten * frontendVoltage(SAMPLES_BUFFER[i + trigPoint + move]);
+        float voltage2 = atten * frontendVoltage(SAMPLES_BUFFER[i + trigPoint + 1 + move]);
         if (voltage2 > maxVoltage)
             maxVoltage = voltage2;
         if (voltage2 < minVoltage)
@@ -353,14 +388,14 @@ void ui::draw_wave(SDL_Color wave_color)
         bottomClip = 0;
         int16_t y1 = (cell_size * Y_CELLS / 2 - 1) - (voltage1 * cell_size / vdiv);
         int16_t y2 = (cell_size * Y_CELLS / 2 - 1) - (voltage2 * cell_size / vdiv);
-        if (y1 > cell_size * cell_size)
+        if (y1 > (cell_size * Y_CELLS))
         {
-            y1 = cell_size * cell_size;
+            y1 = (cell_size * Y_CELLS);
             bottomClip = 1;
         }
-        if (y2 > cell_size * cell_size)
+        if (y2 > (cell_size * Y_CELLS))
         {
-            y2 = cell_size * cell_size;
+            y2 = (cell_size * Y_CELLS);
             bottomClip = 1;
         }
         if (y1 < 0)
