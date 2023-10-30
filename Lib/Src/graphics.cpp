@@ -141,6 +141,14 @@ void graphics::scope_loop(usb &device)
         // Draw the wave
         scope_ui.draw_wave(ORANGE_COLOR);
 
+        // check for if ther is any pending cmd from ui agent and send it to device
+        if (scope_ui.send_flag)
+        {
+            device.send_cmd(scope_ui.cmd);
+            scope_ui.send_flag = 0;
+            std::cout<<scope_ui.cmd<<std::endl;
+        }
+
         // Update the window
         SDL_RenderPresent(renderer);
 
@@ -148,9 +156,9 @@ void graphics::scope_loop(usb &device)
         Uint32 frameDuration = frameEnd - frameStart; // Calculate the duration of the frame
 
         // Delay if the frame finished faster than the desired frame time (1/60 seconds) Response time of 17-18 ms
-        if (frameDuration < 16)
+        if (frameDuration < 100)
         {
-            SDL_Delay(16 - frameDuration);
+            SDL_Delay(100 - frameDuration);
         }
 
         // std::cout << frameDuration << std::endl;

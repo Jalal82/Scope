@@ -14,6 +14,7 @@ private:
     // Thread proto definiton
     void _sendThread(usb &device);
     void _receiveThread(usb &device);
+    
     std::thread send_thread;
 
     ui scope_ui;

@@ -12,6 +12,8 @@
 #define Y_CELLS 18
 #define X_CELLS 31
 
+// #define X_CELLS 31/2
+
 typedef SDL_Surface *(*IMG_LoadFunc)(const char *);
 
 class ui
@@ -22,6 +24,8 @@ private:
     SDL_Texture *texture;
     SDL_Surface *surface_T;
     SDL_Texture *texture_T;
+
+
 
     // Grid Aria Const offset aria and shape vars
     uint8_t cell_size = 30;
@@ -121,8 +125,9 @@ private:
     float trigVoltage = 0.0; // Trigger level
     uint8_t trig = RISING;   // Trigger slope
 
-    float tdiv = 20; // uS per division
-    float sampPer;   // Sample period in uS (how long it takes to measure one sample)
+    float tdiv = 20;   // uS per division
+    float sampPer;     // Sample period in uS (how long it takes to measure one sample)
+    uint32_t sampRate; // Sample rate
 
     float maxVoltage, minVoltage; // Voltage measurements
     float sigPer;                 // Time measurements
@@ -142,6 +147,10 @@ public:
     float measuredFreq;
     uint8_t Mode = 1; // 0  for Stop and 1 for Runing
 
+    // Send cmd to device public vars
+    std::string cmd = "";
+    bool send_flag = false;
+
     ui();
     ~ui();
 
@@ -151,6 +160,7 @@ public:
     void getTrigger();
     void draw_wave(SDL_Color wave_color);
     float frontendVoltage(uint16_t samp);
+    void setTimerFreq(uint32_t Timer_freq);
 };
 
 #endif

@@ -8,7 +8,7 @@ int main()
 #endif
 {
     usb device1("COM10", 1180000);
-    usb device2("COM11", 1180000);
+    usb device2("COM13", 3000000);
 
     graphics scope(0);
     scope.sendThread(device1);

@@ -70,10 +70,15 @@ ui::ui()
     grid_border_box.y++;
     grid_border_box.w++;
     grid_border_box.h++;
+
+    //    sampRate = (16000 * 1000) / tdiv;
+    // sampPer = tdiv / 16.0;
+    // setTimerFreq(sampRate);
 }
 
 ui::~ui()
 {
+ 
 }
 
 void ui::key_handler(SDL_Event &event)
@@ -127,14 +132,19 @@ void ui::key_handler(SDL_Event &event)
             T_Offect++;
             focus_box_T.x += T_Offect % 2;
         }
-        if (tdiv >= 10000)
-            tdiv += 10000;
-        else if (tdiv >= 1000)
+       
+         if (tdiv >= 1000)
             tdiv += 1000;
         else if (tdiv >= 100)
             tdiv += 100;
         else if (tdiv >= 10)
             tdiv += 10;
+     else if (tdiv >= 1)
+            tdiv += 1;
+
+        sampRate = ((cell_size) * 1000 * 1000) / tdiv;
+        sampPer = tdiv / (float)cell_size;
+        setTimerFreq(sampRate);
         break;
 
     case SDLK_LEFT:
@@ -153,6 +163,13 @@ void ui::key_handler(SDL_Event &event)
             tdiv -= 100;
         else if (tdiv > 10)
             tdiv -= 10;
+          
+
+        sampRate = ((cell_size) * 1000 * 1000) / tdiv;
+        sampPer = tdiv / (float)cell_size;
+
+        setTimerFreq(sampRate);
+
         break;
 
     case SDLK_t:
@@ -173,6 +190,11 @@ void ui::key_handler(SDL_Event &event)
         if (trigVoltage < (Y_CELLS / 2 - 1) * vdiv)
             trigVoltage += 0.1;
         break;
+
+
+     case SDLK_h:
+   
+        break;
     case SDLK_2:
         if (trigVoltage > 0)
             trigVoltage -= 0.1;
@@ -182,6 +204,16 @@ void ui::key_handler(SDL_Event &event)
 
     // Update waveform preview aria
     waveform_preview();
+}
+
+void ui::setTimerFreq(uint32_t Timer_freq)
+{
+    // send data over uart;
+    std::cout << "[cmd]: Set Device Timer Frequency = ";
+    std::cout << Timer_freq<<std::endl;
+    cmd = 'T'+std::to_string(Timer_freq)+";";
+    send_flag = 1;
+    
 }
 
 void ui::waveform_preview()
@@ -429,7 +461,7 @@ void ui::draw_wave(SDL_Color wave_color)
 
         // Draw line betwen 2 samples in grid aria
         if (i + 2 <= draw_aria_max_x)
-            thickLineRGBA(renderer, i + grid_x_o + 1, y1 + grid_border_box.y, i + 2 + grid_x_o, y2 + grid_border_box.y, 2, wave_color.r, wave_color.g, wave_color.b, wave_color.a);
+            thickLineRGBA(renderer, (i + 1) +grid_x_o, y1 + grid_border_box.y,( i + 2 ) + grid_x_o, y2 + grid_border_box.y, 2, wave_color.r, wave_color.g, wave_color.b, wave_color.a);
     }
 }
 

@@ -4,10 +4,11 @@
 #include <vector>
 #include <thread>
 
+// T3000000;
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
-
 
 #include "usb.hpp"
 
@@ -16,11 +17,11 @@
 #define HW_OFFSET 1.65
 #define ADC_VCC 3.3
 
-#define RECIEVE_LENGTH 4096*5
+#define RECIEVE_LENGTH (2 * 30 * 31)
 #define SAMPLES_BUFFER_DEPTH 16400 * 2 // 16.4 kbps
-#define LOG_BUFFER_DEPTH 16400 * 10    // 10 sec of loging with 16.4 kbps
+#define LOG_BUFFER_DEPTH 16400 * 2    // 10 sec of loging with 16.4 kbps
 
-#define samplingRate 2.27273e6
+#define samplingRate 1.909091 * 10e6 // Max ADC sampling rate
 
 #define RECIEVE_DEBUG 1
 
@@ -37,7 +38,6 @@ extern const SDL_Color ORANGE_COLOR;
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern TTF_Font *font18;
-
 
 extern int WINDOW_WIDTH;
 extern int WINDOW_HEIGHT;
